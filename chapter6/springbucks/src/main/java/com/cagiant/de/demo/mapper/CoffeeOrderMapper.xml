@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.cagiant.de.demo.dao.CoffeeOrderMapper">
+    <resultMap id="BaseResultMap" type="com.cagiant.de.demo.model.CoffeeOrder">
+        <id property="id" column="id"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="customer" column="customer"/>
+        <collection property="coffees" javaType="ArrayList"
+                    column="id" ofType="com.cagiant.de.demo.model.Coffee"
+                    select="com.cagiant.de.demo.dao.CoffeeMapper.getCoffeeByOrderId"
+                    fetchType="lazy">
+            <id property="id" column="id"/>
+            <result property="createTime" column="create_time"/>
+            <result property="price" column="price"/>
+            <result property="name" column="name"/>
+            <result property="updateTime" column="update_time"/>
+        </collection>
+    </resultMap>
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into my_test.t_order (create_time, update_time, customer, state) values (now(), now(), #{order.customer}, #{order.state});
+    </insert>
+    <insert id="insertRelation">
+        insert into my_test.t_order_coffee (coffee_order_id, items_id) values (#{coffeeOrderRelation.coffeeOrderId}, #{coffeeOrderRelation.itemsId});
+    </insert>
+    <update id="updateStateById">
+        update my_test.t_order set state = #{order.state} where id = #{id};
+    </update>
+    <select id="getById" resultMap="BaseResultMap">
+        select * from my_test.t_order where id = #{id}
+    </select>
+</mapper>
